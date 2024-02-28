@@ -1,15 +1,9 @@
 package com.serviceschedule.controller;
 
-import com.serviceschedule.ServiceScheduleApplication;
 import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.service.ServiceScheduleService;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
