@@ -1,7 +1,9 @@
 package com.serviceschedule.service;
 
+import com.serviceschedule.exception.HorarioDuplicadoException;
 import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
+import com.serviceschedule.model.Horario;
 import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.repository.ServiceScheduleRepository;
 import java.util.List;
@@ -50,4 +52,30 @@ public class ServiceScheduleService {
             }
             serviceScheduleRepository.deleteById(id);
         }
+
+
+    public void associarHorariosAoPrestador(Long idPrestador, List<Horario> horarios) {
+        ServiceScheduleModel prestador = serviceScheduleRepository.findById(idPrestador)
+                .orElseThrow(() -> new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + idPrestador));
+
+        List<Horario> horariosExistente = prestador.getHorarios();
+
+        for (Horario novoHorario : horarios) {
+            boolean duplicado = horariosExistente.stream()
+                    .anyMatch(horario -> horario.getDiaSemana().equals(novoHorario.getDiaSemana())
+                            && horario.getHora().equals(novoHorario.getHora()));
+
+            if (duplicado) {
+                throw new HorarioDuplicadoException("Horário duplicado para o prestador: " + prestador.getId());
+            }
+
+            novoHorario.setPrestador(prestador);
+            novoHorario.setDisponivel(true);
+
+            horariosExistente.add(novoHorario);
+        }
+
+        serviceScheduleRepository.save(prestador);
+
+    }
 }

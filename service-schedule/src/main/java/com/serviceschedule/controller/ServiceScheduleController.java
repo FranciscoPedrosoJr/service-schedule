@@ -1,6 +1,7 @@
 package com.serviceschedule.controller;
 
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
+import com.serviceschedule.model.Horario;
 import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.service.ServiceScheduleService;
 import java.util.List;
@@ -51,6 +52,20 @@ public class ServiceScheduleController {
             return ResponseEntity.ok().build();
         } catch (PrestadorNaoEncontradoException ex) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{id}/horarios")
+    public ResponseEntity<Void> associarHorariosAoPrestador(
+            @PathVariable Long id,
+            @RequestBody List<Horario> horarios) {
+        try {
+            serviceScheduleService.associarHorariosAoPrestador(id, horarios);
+            return ResponseEntity.ok().build();
+        } catch (PrestadorNaoEncontradoException ex) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
