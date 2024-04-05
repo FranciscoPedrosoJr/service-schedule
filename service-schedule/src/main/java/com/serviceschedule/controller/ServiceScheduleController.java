@@ -1,5 +1,6 @@
 package com.serviceschedule.controller;
 
+
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.service.ServiceScheduleService;
@@ -52,6 +53,7 @@ public class ServiceScheduleController {
         } catch (PrestadorNaoEncontradoException ex) {
             return ResponseEntity.notFound().build();
         }
+
     }
 
 }

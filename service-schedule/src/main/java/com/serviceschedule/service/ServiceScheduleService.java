@@ -1,5 +1,6 @@
 package com.serviceschedule.service;
 
+
 import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.ServiceScheduleModel;
@@ -31,6 +32,7 @@ public class ServiceScheduleService {
     }
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
+
         String nomePrestador = serviceScheduleModel.getNome();
 
         if (nomePrestadorJaCadastrado(nomePrestador)) {
@@ -50,4 +52,5 @@ public class ServiceScheduleService {
             }
             serviceScheduleRepository.deleteById(id);
         }
-}
+      
+    }
