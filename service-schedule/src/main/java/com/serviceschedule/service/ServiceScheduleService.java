@@ -1,6 +1,7 @@
 package com.serviceschedule.service;
 
 import com.serviceschedule.exception.PrestadorDuplicadoException;
+import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.repository.ServiceScheduleRepository;
 import java.util.List;
@@ -44,6 +45,9 @@ public class ServiceScheduleService {
     }
 
     public void deletePrestador(Long id) {
-        serviceScheduleRepository.deleteById(id);
-    }
+            if (!serviceScheduleRepository.existsById(id)) {
+                throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + id);
+            }
+            serviceScheduleRepository.deleteById(id);
+        }
 }

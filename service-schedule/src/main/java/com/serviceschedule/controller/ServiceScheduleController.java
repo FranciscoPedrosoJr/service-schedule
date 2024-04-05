@@ -1,5 +1,6 @@
 package com.serviceschedule.controller;
 
+import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.service.ServiceScheduleService;
 import java.util.List;
@@ -45,8 +46,12 @@ public class ServiceScheduleController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePrestador(@PathVariable Long id) {
-        serviceScheduleService.deletePrestador(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            serviceScheduleService.deletePrestador(id);
+            return ResponseEntity.ok().build();
+        } catch (PrestadorNaoEncontradoException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
