@@ -1,8 +1,8 @@
 package com.serviceschedule.repository;
 
+import com.serviceschedule.model.ServiceScheduleModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.serviceschedule.model.ServiceScheduleModel;
-
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
