@@ -8,6 +8,7 @@ import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.repository.ServiceScheduleRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,20 @@ public class ServiceScheduleService {
     }
 
     public List<Horario> getHorariosDisponiveisByPrestadorId(Long idPrestador) {
-        Optional<ServiceScheduleModel> prestador = getPrestadorById(idPrestador);
+        Optional<ServiceScheduleModel> optionalPrestador = getPrestadorById(idPrestador);
 
-        return prestador.get().getHorarios();
+        if(optionalPrestador.isPresent())
+        {
+            ServiceScheduleModel prestador = optionalPrestador.get();
+
+            List<Horario> horariosDisponiveis = prestador.getHorarios().stream()
+                    .filter(Horario::isDisponivel)
+                    .collect(Collectors.toList());
+
+            return horariosDisponiveis;
+        } else {
+            throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + idPrestador);
+        }
     }
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
