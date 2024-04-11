@@ -1,5 +1,6 @@
 package com.serviceschedule.service;
 
+
 import com.serviceschedule.exception.HorarioDuplicadoException;
 import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
@@ -9,6 +10,8 @@ import com.serviceschedule.repository.ServiceScheduleRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,7 @@ public class ServiceScheduleService {
     }
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
+
         String nomePrestador = serviceScheduleModel.getNome();
 
         if (nomePrestadorJaCadastrado(nomePrestador)) {
@@ -68,7 +72,6 @@ public class ServiceScheduleService {
             }
             serviceScheduleRepository.deleteById(id);
         }
-
 
     public void associarHorariosAoPrestador(Long idPrestador, List<Horario> horarios) {
         ServiceScheduleModel prestador = serviceScheduleRepository.findById(idPrestador)
@@ -95,3 +98,4 @@ public class ServiceScheduleService {
 
     }
 }
+
