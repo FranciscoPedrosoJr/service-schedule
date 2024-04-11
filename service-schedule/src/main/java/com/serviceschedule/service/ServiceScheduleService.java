@@ -1,6 +1,5 @@
 package com.serviceschedule.service;
 
-
 import com.serviceschedule.exception.HorarioDuplicadoException;
 import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
@@ -10,8 +9,6 @@ import com.serviceschedule.repository.ServiceScheduleRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.concurrent.ExecutionException;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +18,8 @@ public class ServiceScheduleService {
     private final ServiceScheduleRepository serviceScheduleRepository;
 
     @Autowired
-    public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository){
+    public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository) {
+
         this.serviceScheduleRepository = serviceScheduleRepository;
     }
 
@@ -35,13 +33,13 @@ public class ServiceScheduleService {
     }
 
     public List<Horario> getHorariosDisponiveisByPrestadorId(Long idPrestador) {
-        Optional<ServiceScheduleModel> optionalPrestador = getPrestadorById(idPrestador);
 
-        if(optionalPrestador.isPresent())
-        {
-            ServiceScheduleModel prestador = optionalPrestador.get();
+        final Optional<ServiceScheduleModel> optionalPrestador = getPrestadorById(idPrestador);
 
-            List<Horario> horariosDisponiveis = prestador.getHorarios().stream()
+        if (optionalPrestador.isPresent()) {
+            final ServiceScheduleModel prestador = optionalPrestador.get();
+
+            final List<Horario> horariosDisponiveis = prestador.getHorarios().stream()
                     .filter(Horario::isDisponivel)
                     .collect(Collectors.toList());
 
@@ -53,7 +51,7 @@ public class ServiceScheduleService {
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
 
-        String nomePrestador = serviceScheduleModel.getNome();
+        final String nomePrestador = serviceScheduleModel.getNome();
 
         if (nomePrestadorJaCadastrado(nomePrestador)) {
             throw new PrestadorDuplicadoException("Já existe um prestador com este nome cadastrado");
@@ -67,20 +65,23 @@ public class ServiceScheduleService {
     }
 
     public void deletePrestador(Long id) {
-            if (!serviceScheduleRepository.existsById(id)) {
-                throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + id);
-            }
-            serviceScheduleRepository.deleteById(id);
+
+        if (!serviceScheduleRepository.existsById(id)) {
+            throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + id);
         }
+        serviceScheduleRepository.deleteById(id);
+    }
+
 
     public void associarHorariosAoPrestador(Long idPrestador, List<Horario> horarios) {
-        ServiceScheduleModel prestador = serviceScheduleRepository.findById(idPrestador)
+        final ServiceScheduleModel prestador = serviceScheduleRepository.findById(idPrestador)
                 .orElseThrow(() -> new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + idPrestador));
 
-        List<Horario> horariosExistente = prestador.getHorarios();
+        final List<Horario> horariosExistente = prestador.getHorarios();
 
         for (Horario novoHorario : horarios) {
-            boolean duplicado = horariosExistente.stream()
+            final boolean duplicado = horariosExistente.stream()
+
                     .anyMatch(horario -> horario.getDiaSemana().equals(novoHorario.getDiaSemana())
                             && horario.getHora().equals(novoHorario.getHora()));
 
@@ -98,4 +99,3 @@ public class ServiceScheduleService {
 
     }
 }
-
