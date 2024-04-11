@@ -69,4 +69,10 @@ public class ServiceScheduleController {
         }
     }
 
+    @GetMapping("/{id}/horarios-disponiveis")
+    public ResponseEntity<List<Horario>> getHorariosDisponiveisByPrestadorId(@PathVariable Long id) {
+        List<Horario> horariosDisponiveis = serviceScheduleService.getHorariosDisponiveisByPrestadorId(id);
+        return new ResponseEntity<>(horariosDisponiveis, HttpStatus.OK);
+    }
+
 }

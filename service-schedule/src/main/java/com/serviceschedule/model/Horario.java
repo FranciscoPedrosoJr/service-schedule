@@ -1,5 +1,6 @@
 package com.serviceschedule.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ public class Horario {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "prestador_id")
     private ServiceScheduleModel prestador;
     private String diaSemana;

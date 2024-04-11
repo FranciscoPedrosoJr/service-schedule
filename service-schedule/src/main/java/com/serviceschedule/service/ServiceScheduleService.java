@@ -8,8 +8,6 @@ import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.repository.ServiceScheduleRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +28,12 @@ public class ServiceScheduleService {
 
     public Optional<ServiceScheduleModel> getPrestadorById(Long id) {
         return serviceScheduleRepository.findById(id);
+    }
+
+    public List<Horario> getHorariosDisponiveisByPrestadorId(Long idPrestador) {
+        Optional<ServiceScheduleModel> prestador = getPrestadorById(idPrestador);
+
+        return prestador.get().getHorarios();
     }
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
