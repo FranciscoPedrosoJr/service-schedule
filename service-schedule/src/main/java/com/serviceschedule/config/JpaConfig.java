@@ -14,7 +14,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 @Configuration
 @EnableJpaRepositories(basePackages = {"com.serviceschedule.repository"})
 @EnableTransactionManagement
@@ -25,7 +24,9 @@ public class JpaConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+      
         em.setDataSource(dataSource);
         em.setPackagesToScan("com.serviceschedule.model");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
@@ -36,13 +37,17 @@ public class JpaConfig {
 
     @Bean
     public PlatformTransactionManager transactionManager(@Qualifier("entityManagerFactory") EntityManagerFactory emf) {
+
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
+
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
     }
 
     private Properties additionalProperties() {
+
         final Properties properties = new Properties();
+
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.hbm2ddl.auto", "update");

@@ -19,6 +19,7 @@ public class ServiceScheduleService {
 
     @Autowired
     public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository) {
+
         this.serviceScheduleRepository = serviceScheduleRepository;
     }
 
@@ -32,6 +33,7 @@ public class ServiceScheduleService {
     }
 
     public List<Horario> getHorariosDisponiveisByPrestadorId(Long idPrestador) {
+
         final Optional<ServiceScheduleModel> optionalPrestador = getPrestadorById(idPrestador);
 
         if (optionalPrestador.isPresent()) {
@@ -48,6 +50,7 @@ public class ServiceScheduleService {
     }
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
+
         final String nomePrestador = serviceScheduleModel.getNome();
 
         if (nomePrestadorJaCadastrado(nomePrestador)) {
@@ -62,6 +65,7 @@ public class ServiceScheduleService {
     }
 
     public void deletePrestador(Long id) {
+
         if (!serviceScheduleRepository.existsById(id)) {
             throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + id);
         }
@@ -77,6 +81,7 @@ public class ServiceScheduleService {
 
         for (Horario novoHorario : horarios) {
             final boolean duplicado = horariosExistente.stream()
+
                     .anyMatch(horario -> horario.getDiaSemana().equals(novoHorario.getDiaSemana())
                             && horario.getHora().equals(novoHorario.getHora()));
 
