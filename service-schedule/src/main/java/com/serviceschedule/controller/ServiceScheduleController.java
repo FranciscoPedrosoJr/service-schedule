@@ -1,5 +1,9 @@
 package com.serviceschedule.controller;
 
+
+import com.serviceschedule.exception.HorarioDisponivelException;
+import com.serviceschedule.exception.HorarioNaoDisponivelException;
+import com.serviceschedule.exception.HorarioNaoEncontradoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.Horario;
 import com.serviceschedule.model.ServiceScheduleModel;
@@ -36,7 +40,7 @@ public class ServiceScheduleController {
     public ResponseEntity<ServiceScheduleModel> getPrestadorById(@PathVariable Long id) {
 
         final Optional<ServiceScheduleModel> prestadorServico = serviceScheduleService.getPrestadorById(id);
-      
+
         return prestadorServico.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -68,8 +72,6 @@ public class ServiceScheduleController {
             return ResponseEntity.ok().build();
         } catch (PrestadorNaoEncontradoException ex) {
             return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -77,8 +79,32 @@ public class ServiceScheduleController {
     public ResponseEntity<List<Horario>> getHorariosDisponiveisByPrestadorId(@PathVariable Long id) {
 
         final List<Horario> horariosDisponiveis = serviceScheduleService.getHorariosDisponiveisByPrestadorId(id);
-
         return new ResponseEntity<>(horariosDisponiveis, HttpStatus.OK);
+    }
+
+    @PostMapping("/{idPrestador}/horarios/{idHorario}/agendar")
+    public ResponseEntity<Void> alterarDisponibilidadeHorario(
+            @PathVariable Long idPrestador,
+            @PathVariable Long idHorario) {
+        try {
+            serviceScheduleService.alterarDisponibilidadeHorario(idPrestador, idHorario);
+            return ResponseEntity.ok().build();
+        } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException | HorarioNaoDisponivelException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{idPrestador}/horarios/{idHorario}/cancelar-agenda")
+    public ResponseEntity<Void> alterarDisponibilidadeHorarioParaTrue(
+            @PathVariable Long idPrestador,
+            @PathVariable Long idHorario) {
+        try {
+            serviceScheduleService.alterarDisponibilidadeHorarioParaTrue(idPrestador, idHorario);
+            return ResponseEntity.ok().build();
+        } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException | HorarioDisponivelException ex) {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
 }

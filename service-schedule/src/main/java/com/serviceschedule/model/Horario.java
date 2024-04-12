@@ -53,4 +53,9 @@ public class Horario {
     public void setDisponivel(boolean disponivel) {
         this.disponivel = disponivel;
     }
+
+    public Long getId() {
+        return id;
+    }
+
 }

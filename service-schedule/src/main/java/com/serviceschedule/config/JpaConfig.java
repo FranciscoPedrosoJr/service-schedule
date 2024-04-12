@@ -26,7 +26,7 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-      
+
         em.setDataSource(dataSource);
         em.setPackagesToScan("com.serviceschedule.model");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());

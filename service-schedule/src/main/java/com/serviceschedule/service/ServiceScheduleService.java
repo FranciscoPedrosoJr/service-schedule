@@ -1,6 +1,10 @@
 package com.serviceschedule.service;
 
+
+import com.serviceschedule.exception.HorarioDisponivelException;
 import com.serviceschedule.exception.HorarioDuplicadoException;
+import com.serviceschedule.exception.HorarioNaoDisponivelException;
+import com.serviceschedule.exception.HorarioNaoEncontradoException;
 import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.Horario;
@@ -45,7 +49,7 @@ public class ServiceScheduleService {
 
             return horariosDisponiveis;
         } else {
-            throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + idPrestador);
+            throw new PrestadorNaoEncontradoException(idPrestador);
         }
     }
 
@@ -67,7 +71,8 @@ public class ServiceScheduleService {
     public void deletePrestador(Long id) {
 
         if (!serviceScheduleRepository.existsById(id)) {
-            throw new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + id);
+            throw new PrestadorNaoEncontradoException(id);
+
         }
         serviceScheduleRepository.deleteById(id);
     }
@@ -75,18 +80,18 @@ public class ServiceScheduleService {
 
     public void associarHorariosAoPrestador(Long idPrestador, List<Horario> horarios) {
         final ServiceScheduleModel prestador = serviceScheduleRepository.findById(idPrestador)
-                .orElseThrow(() -> new PrestadorNaoEncontradoException("Prestador não encontrado com o ID: " + idPrestador));
+
+                .orElseThrow(() -> new PrestadorNaoEncontradoException(idPrestador));
 
         final List<Horario> horariosExistente = prestador.getHorarios();
 
         for (Horario novoHorario : horarios) {
             final boolean duplicado = horariosExistente.stream()
-
                     .anyMatch(horario -> horario.getDiaSemana().equals(novoHorario.getDiaSemana())
                             && horario.getHora().equals(novoHorario.getHora()));
 
             if (duplicado) {
-                throw new HorarioDuplicadoException("Horário duplicado para o prestador: " + prestador.getId());
+                throw new HorarioDuplicadoException(prestador.getId());
             }
 
             novoHorario.setPrestador(prestador);
@@ -97,5 +102,61 @@ public class ServiceScheduleService {
 
         serviceScheduleRepository.save(prestador);
 
+    }
+
+    public void alterarDisponibilidadeHorario(Long idPrestador, Long idHorario) {
+
+        final Optional<ServiceScheduleModel> optionalPrestador = serviceScheduleRepository.findById(idPrestador);
+
+        if (optionalPrestador.isPresent()) {
+            final ServiceScheduleModel prestador = optionalPrestador.get();
+
+            final Optional<Horario> optionalHorario = prestador.getHorarios().stream()
+                    .filter(horario -> horario.getId().equals(idHorario))
+                    .findFirst();
+
+            if (optionalHorario.isPresent()) {
+                final Horario horario = optionalHorario.get();
+
+                if (horario.isDisponivel()) {
+                    horario.setDisponivel(false);
+                    serviceScheduleRepository.save(prestador);
+                } else {
+                    throw new HorarioNaoDisponivelException();
+                }
+            } else {
+                throw new HorarioNaoEncontradoException(idPrestador);
+            }
+        } else {
+            throw new PrestadorNaoEncontradoException(idPrestador);
+        }
+    }
+
+    public void alterarDisponibilidadeHorarioParaTrue(Long idPrestador, Long idHorario) {
+
+        final Optional<ServiceScheduleModel> optionalPrestador = serviceScheduleRepository.findById(idPrestador);
+
+        if (optionalPrestador.isPresent()) {
+            final ServiceScheduleModel prestador = optionalPrestador.get();
+
+            final Optional<Horario> optionalHorario = prestador.getHorarios().stream()
+                    .filter(horario -> horario.getId().equals(idHorario))
+                    .findFirst();
+
+            if (optionalHorario.isPresent()) {
+                final Horario horario = optionalHorario.get();
+
+                if (horario.isDisponivel() == false) {
+                    horario.setDisponivel(true);
+                    serviceScheduleRepository.save(prestador);
+                } else {
+                    throw new HorarioDisponivelException();
+                }
+            } else {
+                throw new HorarioNaoEncontradoException(idPrestador);
+            }
+        } else {
+            throw new PrestadorNaoEncontradoException(idPrestador);
+        }
     }
 }
