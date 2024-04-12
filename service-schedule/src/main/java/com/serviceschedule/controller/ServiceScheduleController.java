@@ -37,14 +37,18 @@ public class ServiceScheduleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ServiceScheduleModel> getPrestadorById(@PathVariable Long id) {
+
         final Optional<ServiceScheduleModel> prestadorServico = serviceScheduleService.getPrestadorById(id);
+
         return prestadorServico.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     public ResponseEntity<ServiceScheduleModel> savePrestador(@RequestBody ServiceScheduleModel prestadorServico) {
+
         final ServiceScheduleModel savedPrestador = serviceScheduleService.savePrestador(prestadorServico);
+
         return new ResponseEntity<>(savedPrestador, HttpStatus.CREATED);
     }
 
@@ -72,6 +76,7 @@ public class ServiceScheduleController {
 
     @GetMapping("/{id}/horarios-disponiveis")
     public ResponseEntity<List<Horario>> getHorariosDisponiveisByPrestadorId(@PathVariable Long id) {
+
         final List<Horario> horariosDisponiveis = serviceScheduleService.getHorariosDisponiveisByPrestadorId(id);
         return new ResponseEntity<>(horariosDisponiveis, HttpStatus.OK);
     }

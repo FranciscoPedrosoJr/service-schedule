@@ -22,6 +22,7 @@ public class ServiceScheduleService {
 
     @Autowired
     public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository) {
+      
         this.serviceScheduleRepository = serviceScheduleRepository;
     }
 
@@ -152,4 +153,5 @@ public class ServiceScheduleService {
             throw new PrestadorNaoEncontradoException(idPrestador);
         }
     }
+
 }
