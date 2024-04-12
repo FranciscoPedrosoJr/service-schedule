@@ -57,5 +57,4 @@ public class Horario {
     public Long getId() {
         return id;
     }
-
 }

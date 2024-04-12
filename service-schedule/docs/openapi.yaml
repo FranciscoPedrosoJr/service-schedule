@@ -1,0 +1,191 @@
+swagger: '2.0'
+info:
+  title: Service Schedule API
+  description: API for managing service schedules
+  version: '1.0'
+basePath: /prestadores
+tags:
+  - name: Prestadores
+    description: Operations related to service providers
+
+paths:
+  /:
+    get:
+      tags:
+        - Prestadores
+      summary: Get all service providers
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServiceScheduleModel'
+        '404':
+          description: Not Found
+
+  /{id}:
+    get:
+      tags:
+        - Prestadores
+      summary: Get a service provider by ID
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of the service provider
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ServiceScheduleModel'
+        '404':
+          description: Not Found
+
+    delete:
+      tags:
+        - Prestadores
+      summary: Delete a service provider by ID
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of the service provider
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /{id}/horarios:
+    post:
+      tags:
+        - Prestadores
+      summary: Associate schedules with a service provider
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of the service provider
+          required: true
+          type: integer
+        - name: horarios
+          in: body
+          description: List of schedules to associate
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Horario'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /{id}/horarios-disponiveis:
+    get:
+      tags:
+        - Prestadores
+      summary: Get available schedules for a service provider
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of the service provider
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Horario'
+        '404':
+          description: Not Found
+
+  /{idPrestador}/horarios/{idHorario}/agendar:
+    post:
+      tags:
+        - Prestadores
+      summary: Book a schedule for a service provider
+      produces:
+        - application/json
+      parameters:
+        - name: idPrestador
+          in: path
+          description: ID of the service provider
+          required: true
+          type: integer
+        - name: idHorario
+          in: path
+          description: ID of the schedule
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /{idPrestador}/horarios/{idHorario}/cancelar-agenda:
+    post:
+      tags:
+        - Prestadores
+      summary: Cancel a booked schedule for a service provider
+      produces:
+        - application/json
+      parameters:
+        - name: idPrestador
+          in: path
+          description: ID of the service provider
+          required: true
+          type: integer
+        - name: idHorario
+          in: path
+          description: ID of the schedule
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+definitions:
+  ServiceScheduleModel:
+    type: object
+    properties:
+      id:
+        type: integer
+      nome:
+        type: string
+      categoria:
+        type: string
+      valorServico:
+        type: number
+
+  Horario:
+    type: object
+    properties:
+      id:
+        type: integer
+      diaSemana:
+        type: string
+      hora:
+        type: string
+      disponivel:
+        type: boolean

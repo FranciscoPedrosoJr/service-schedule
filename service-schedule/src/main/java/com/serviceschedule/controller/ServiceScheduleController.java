@@ -1,6 +1,5 @@
 package com.serviceschedule.controller;
 
-
 import com.serviceschedule.exception.HorarioDisponivelException;
 import com.serviceschedule.exception.HorarioNaoDisponivelException;
 import com.serviceschedule.exception.HorarioNaoEncontradoException;
@@ -104,7 +103,6 @@ public class ServiceScheduleController {
         } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException | HorarioDisponivelException ex) {
             return ResponseEntity.notFound().build();
         }
-
     }
 
 }

@@ -1,6 +1,5 @@
 package com.serviceschedule.service;
 
-
 import com.serviceschedule.exception.HorarioDisponivelException;
 import com.serviceschedule.exception.HorarioDuplicadoException;
 import com.serviceschedule.exception.HorarioNaoDisponivelException;
@@ -23,7 +22,7 @@ public class ServiceScheduleService {
 
     @Autowired
     public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository) {
-
+      
         this.serviceScheduleRepository = serviceScheduleRepository;
     }
 
@@ -37,7 +36,6 @@ public class ServiceScheduleService {
     }
 
     public List<Horario> getHorariosDisponiveisByPrestadorId(Long idPrestador) {
-
         final Optional<ServiceScheduleModel> optionalPrestador = getPrestadorById(idPrestador);
 
         if (optionalPrestador.isPresent()) {
@@ -54,7 +52,6 @@ public class ServiceScheduleService {
     }
 
     public ServiceScheduleModel savePrestador(ServiceScheduleModel serviceScheduleModel) {
-
         final String nomePrestador = serviceScheduleModel.getNome();
 
         if (nomePrestadorJaCadastrado(nomePrestador)) {
@@ -69,10 +66,8 @@ public class ServiceScheduleService {
     }
 
     public void deletePrestador(Long id) {
-
         if (!serviceScheduleRepository.existsById(id)) {
             throw new PrestadorNaoEncontradoException(id);
-
         }
         serviceScheduleRepository.deleteById(id);
     }
@@ -80,7 +75,6 @@ public class ServiceScheduleService {
 
     public void associarHorariosAoPrestador(Long idPrestador, List<Horario> horarios) {
         final ServiceScheduleModel prestador = serviceScheduleRepository.findById(idPrestador)
-
                 .orElseThrow(() -> new PrestadorNaoEncontradoException(idPrestador));
 
         final List<Horario> horariosExistente = prestador.getHorarios();
@@ -159,4 +153,5 @@ public class ServiceScheduleService {
             throw new PrestadorNaoEncontradoException(idPrestador);
         }
     }
+
 }
