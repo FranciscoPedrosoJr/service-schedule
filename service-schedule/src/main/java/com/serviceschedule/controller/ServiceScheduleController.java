@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,14 +64,14 @@ public class ServiceScheduleController {
     }
 
     @PostMapping("/{id}/horarios")
-    public ResponseEntity<Void> associarHorariosAoPrestador(
+    public ResponseEntity<String> associarHorariosAoPrestador(
             @PathVariable Long id,
             @RequestBody List<Horario> horarios) {
         try {
             serviceScheduleService.associarHorariosAoPrestador(id, horarios);
             return ResponseEntity.ok().build();
         } catch (PrestadorNaoEncontradoException ex) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
