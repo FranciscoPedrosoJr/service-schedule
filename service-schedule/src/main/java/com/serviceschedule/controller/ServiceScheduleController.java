@@ -1,8 +1,10 @@
 package com.serviceschedule.controller;
 
 import com.serviceschedule.exception.HorarioDisponivelException;
+import com.serviceschedule.exception.HorarioDuplicadoException;
 import com.serviceschedule.exception.HorarioNaoDisponivelException;
 import com.serviceschedule.exception.HorarioNaoEncontradoException;
+import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.Horario;
 import com.serviceschedule.model.ServiceScheduleModel;
@@ -45,12 +47,14 @@ public class ServiceScheduleController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping
-    public ResponseEntity<ServiceScheduleModel> savePrestador(@RequestBody ServiceScheduleModel prestadorServico) {
-
-        final ServiceScheduleModel savedPrestador = serviceScheduleService.savePrestador(prestadorServico);
-
-        return new ResponseEntity<>(savedPrestador, HttpStatus.CREATED);
+    @PostMapping("/cadastrar")
+    public ResponseEntity<String> savePrestador(@RequestBody ServiceScheduleModel prestadorServico) {
+        try {
+            final ServiceScheduleModel savedPrestador = serviceScheduleService.savePrestador(prestadorServico);
+            return ResponseEntity.ok().build();
+        } catch (PrestadorDuplicadoException ex) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -72,6 +76,8 @@ public class ServiceScheduleController {
             return ResponseEntity.ok().build();
         } catch (PrestadorNaoEncontradoException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        } catch (HorarioDuplicadoException ex) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
@@ -83,14 +89,14 @@ public class ServiceScheduleController {
     }
 
     @PostMapping("/{idPrestador}/horarios/{idHorario}/agendar")
-    public ResponseEntity<Void> alterarDisponibilidadeHorario(
+    public ResponseEntity<String> alterarDisponibilidadeHorario(
             @PathVariable Long idPrestador,
             @PathVariable Long idHorario) {
         try {
             serviceScheduleService.alterarDisponibilidadeHorario(idPrestador, idHorario);
             return ResponseEntity.ok().build();
         } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException | HorarioNaoDisponivelException ex) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 

@@ -55,7 +55,7 @@ public class ServiceScheduleService {
         final String nomePrestador = serviceScheduleModel.getNome();
 
         if (nomePrestadorJaCadastrado(nomePrestador)) {
-            throw new PrestadorDuplicadoException("Já existe um prestador com este nome cadastrado");
+            throw new PrestadorDuplicadoException(nomePrestador);
         }
 
         return serviceScheduleRepository.save(serviceScheduleModel);

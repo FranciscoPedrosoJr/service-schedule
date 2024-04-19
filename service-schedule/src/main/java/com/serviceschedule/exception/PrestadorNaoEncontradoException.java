@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class PrestadorNaoEncontradoException extends RuntimeException {
 
-
     private final Long id;
 
     public PrestadorNaoEncontradoException(Long id) {
