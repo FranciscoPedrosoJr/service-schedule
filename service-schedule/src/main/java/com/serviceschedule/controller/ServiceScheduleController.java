@@ -95,20 +95,24 @@ public class ServiceScheduleController {
         try {
             serviceScheduleService.alterarDisponibilidadeHorario(idPrestador, idHorario);
             return ResponseEntity.ok().build();
-        } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException | HorarioNaoDisponivelException ex) {
+        } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        } catch (HorarioNaoDisponivelException ex) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
     @PostMapping("/{idPrestador}/horarios/{idHorario}/cancelar-agenda")
-    public ResponseEntity<Void> alterarDisponibilidadeHorarioParaTrue(
+    public ResponseEntity<String> alterarDisponibilidadeHorarioParaTrue(
             @PathVariable Long idPrestador,
             @PathVariable Long idHorario) {
         try {
             serviceScheduleService.alterarDisponibilidadeHorarioParaTrue(idPrestador, idHorario);
             return ResponseEntity.ok().build();
-        } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException | HorarioDisponivelException ex) {
-            return ResponseEntity.notFound().build();
+        } catch (PrestadorNaoEncontradoException | HorarioNaoEncontradoException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
+        } catch (HorarioDisponivelException ex) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).contentType(MediaType.APPLICATION_JSON).body(ex.getMessage());
         }
     }
 
