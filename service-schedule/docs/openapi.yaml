@@ -1,191 +1,201 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
   title: Service Schedule API
-  description: API for managing service schedules
-  version: '1.0'
-basePath: /prestadores
-tags:
-  - name: Prestadores
-    description: Operations related to service providers
-
+  description: API para gerenciamento de prestadores de serviço e horários
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080  # Altere a URL conforme necessário
+    description: Servidor local
 paths:
-  /:
+  /prestadores:
     get:
-      tags:
-        - Prestadores
-      summary: Get all service providers
-      produces:
-        - application/json
+      summary: Obter todos os prestadores
       responses:
         '200':
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ServiceScheduleModel'
-        '404':
-          description: Not Found
-
-  /{id}:
+          description: Lista de todos os prestadores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceScheduleModel'
+    post:
+      summary: Cadastrar novo prestador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceScheduleModel'
+      responses:
+        '201':
+          description: Prestador cadastrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceScheduleModel'
+  /prestadores/{id}:
     get:
-      tags:
-        - Prestadores
-      summary: Get a service provider by ID
-      produces:
-        - application/json
+      summary: Obter prestador por ID
       parameters:
         - name: id
           in: path
-          description: ID of the service provider
           required: true
-          type: integer
+          description: ID do prestador
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/ServiceScheduleModel'
+          description: Prestador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceScheduleModel'
         '404':
-          description: Not Found
-
+          description: Prestador não encontrado
     delete:
-      tags:
-        - Prestadores
-      summary: Delete a service provider by ID
-      produces:
-        - application/json
+      summary: Excluir prestador por ID
       parameters:
         - name: id
           in: path
-          description: ID of the service provider
           required: true
-          type: integer
-      responses:
-        '200':
-          description: OK
-        '404':
-          description: Not Found
-
-  /{id}/horarios:
-    post:
-      tags:
-        - Prestadores
-      summary: Associate schedules with a service provider
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: id
-          in: path
-          description: ID of the service provider
-          required: true
-          type: integer
-        - name: horarios
-          in: body
-          description: List of schedules to associate
-          required: true
+          description: ID do prestador
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Horario'
+            type: integer
+            format: int64
       responses:
         '200':
-          description: OK
+          description: Prestador excluído com sucesso
         '404':
-          description: Not Found
-
-  /{id}/horarios-disponiveis:
+          description: Prestador não encontrado
+  /prestadores/{id}/horarios:
+    post:
+      summary: Associar horários ao prestador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do prestador
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Horario'
+      responses:
+        '200':
+          description: Horários associados com sucesso
+        '404':
+          description: Prestador não encontrado
+        '422':
+          description: Horário duplicado ou inválido
+  /prestadores/{id}/horarios-disponiveis:
     get:
-      tags:
-        - Prestadores
-      summary: Get available schedules for a service provider
-      produces:
-        - application/json
+      summary: Obter horários disponíveis do prestador
       parameters:
         - name: id
           in: path
-          description: ID of the service provider
           required: true
-          type: integer
-      responses:
-        '200':
-          description: OK
+          description: ID do prestador
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Horario'
-        '404':
-          description: Not Found
-
-  /{idPrestador}/horarios/{idHorario}/agendar:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de horários disponíveis
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Horario'
+  /prestadores/{idPrestador}/horarios/{idHorario}/agendar:
     post:
-      tags:
-        - Prestadores
-      summary: Book a schedule for a service provider
-      produces:
-        - application/json
+      summary: Agendar horário com o prestador
       parameters:
         - name: idPrestador
           in: path
-          description: ID of the service provider
           required: true
-          type: integer
+          description: ID do prestador
+          schema:
+            type: integer
+            format: int64
         - name: idHorario
           in: path
-          description: ID of the schedule
           required: true
-          type: integer
+          description: ID do horário
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
-          description: OK
+          description: Horário agendado com sucesso
         '404':
-          description: Not Found
-
-  /{idPrestador}/horarios/{idHorario}/cancelar-agenda:
+          description: Prestador ou horário não encontrado
+        '422':
+          description: Horário não disponível para agendamento
+  /prestadores/{idPrestador}/horarios/{idHorario}/cancelar-agenda:
     post:
-      tags:
-        - Prestadores
-      summary: Cancel a booked schedule for a service provider
-      produces:
-        - application/json
+      summary: Cancelar agendamento de horário com o prestador
       parameters:
         - name: idPrestador
           in: path
-          description: ID of the service provider
           required: true
-          type: integer
+          description: ID do prestador
+          schema:
+            type: integer
+            format: int64
         - name: idHorario
           in: path
-          description: ID of the schedule
           required: true
-          type: integer
+          description: ID do horário agendado
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
-          description: OK
+          description: Agendamento cancelado com sucesso
         '404':
-          description: Not Found
-
-definitions:
-  ServiceScheduleModel:
-    type: object
-    properties:
-      id:
-        type: integer
-      nome:
-        type: string
-      categoria:
-        type: string
-      valorServico:
-        type: number
-
-  Horario:
-    type: object
-    properties:
-      id:
-        type: integer
-      diaSemana:
-        type: string
-      hora:
-        type: string
-      disponivel:
-        type: boolean
+          description: Prestador ou horário não encontrado
+        '422':
+          description: Horário já está disponível
+components:
+  schemas:
+    ServiceScheduleModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        categoria:
+          type: string
+        valorServico:
+          type: number
+      required:
+        - nome
+        - categoria
+        - valorServico
+    Horario:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        diaSemana:
+          type: string
+        hora:
+          type: string
+        disponivel:
+          type: boolean
+      required:
+        - diaSemana
+        - hora
+        - disponivel
