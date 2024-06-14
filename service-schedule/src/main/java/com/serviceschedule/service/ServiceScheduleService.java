@@ -19,11 +19,14 @@ import org.springframework.stereotype.Service;
 public class ServiceScheduleService {
 
     private final ServiceScheduleRepository serviceScheduleRepository;
+    private final KafkaProducerService kafkaProducerService;
 
     @Autowired
-    public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository) {
+    public ServiceScheduleService(ServiceScheduleRepository serviceScheduleRepository,
+                                    KafkaProducerService kafkaProducerService) {
       
         this.serviceScheduleRepository = serviceScheduleRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
 
@@ -115,6 +118,7 @@ public class ServiceScheduleService {
                 if (horario.isDisponivel()) {
                     horario.setDisponivel(false);
                     serviceScheduleRepository.save(prestador);
+                    kafkaProducerService.sendMessage("agendamentos", "Novo agendamento: " + prestador.toString());
                 } else {
                     throw new HorarioNaoDisponivelException();
                 }
@@ -143,6 +147,7 @@ public class ServiceScheduleService {
                 if (horario.isDisponivel() == false) {
                     horario.setDisponivel(true);
                     serviceScheduleRepository.save(prestador);
+                    kafkaProducerService.sendMessage("cancelamentos", "Horário cancelado: " + idHorario);
                 } else {
                     throw new HorarioDisponivelException();
                 }
