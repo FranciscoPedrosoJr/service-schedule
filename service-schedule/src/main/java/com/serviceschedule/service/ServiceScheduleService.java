@@ -118,7 +118,9 @@ public class ServiceScheduleService {
                 if (horario.isDisponivel()) {
                     horario.setDisponivel(false);
                     serviceScheduleRepository.save(prestador);
-                    kafkaProducerService.sendMessage("agendamentos", "Novo agendamento: " + prestador.toString());
+                    final String mensagem = String.format("Novo agendamento: Prestador=%s, Horário=%s",
+                            prestador.getNome(), horario.getHora().toString());
+                    kafkaProducerService.sendMessage("agendamentos", mensagem);
                 } else {
                     throw new HorarioNaoDisponivelException();
                 }
@@ -147,7 +149,9 @@ public class ServiceScheduleService {
                 if (horario.isDisponivel() == false) {
                     horario.setDisponivel(true);
                     serviceScheduleRepository.save(prestador);
-                    kafkaProducerService.sendMessage("cancelamentos", "Horário cancelado: " + idHorario);
+                    final String mensagem = String.format("Cancelamento registrado: Prestador=%s, Horário=%s",
+                            prestador.getNome(), horario.getHora().toString());
+                    kafkaProducerService.sendMessage("cancelamentos", mensagem);
                 } else {
                     throw new HorarioDisponivelException();
                 }
