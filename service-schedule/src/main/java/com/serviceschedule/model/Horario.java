@@ -26,6 +26,10 @@ public class Horario {
         return prestador;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setPrestador(ServiceScheduleModel prestador) {
         this.prestador = prestador;
     }
