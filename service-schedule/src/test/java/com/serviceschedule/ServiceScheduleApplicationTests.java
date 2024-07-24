@@ -7,7 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.serviceschedule.exception.HorarioDisponivelException;
 import com.serviceschedule.exception.HorarioDuplicadoException;
+import com.serviceschedule.exception.HorarioNaoEncontradoException;
+import com.serviceschedule.exception.PrestadorDuplicadoException;
 import com.serviceschedule.exception.PrestadorNaoEncontradoException;
 import com.serviceschedule.model.Horario;
 import com.serviceschedule.model.ServiceScheduleModel;
@@ -230,4 +233,84 @@ class ServiceScheduleApplicationTests {
 		verify(serviceScheduleRepository, times(2)).findById(2L); // Chamado duas vezes, uma para duplicado e outra para sucesso
 		verify(serviceScheduleRepository, times(1)).save(prestador);
 	}
+
+	@Test
+	void testAlterarDisponibilidadeHorarioParaTrue() {
+		when(serviceScheduleRepository.findById(1L)).thenReturn(Optional.empty());
+
+		assertThrows(PrestadorNaoEncontradoException.class, () -> {
+			serviceScheduleService.alterarDisponibilidadeHorarioParaTrue(1L, 1L);
+		});
+
+		ServiceScheduleModel prestador = new ServiceScheduleModel();
+		prestador.setId(2L);
+		prestador.setNome("Prestador 2");
+		prestador.setHorarios(new ArrayList<>());
+
+		when(serviceScheduleRepository.findById(2L)).thenReturn(Optional.of(prestador));
+
+		assertThrows(HorarioNaoEncontradoException.class, () -> {
+			serviceScheduleService.alterarDisponibilidadeHorarioParaTrue(2L, 1L);
+		});
+
+		Horario horarioExistente = new Horario();
+		horarioExistente.setId(3L);
+		horarioExistente.setDisponivel(true);
+
+		prestador.setHorarios(Arrays.asList(horarioExistente));
+
+		assertThrows(HorarioDisponivelException.class, () -> {
+			serviceScheduleService.alterarDisponibilidadeHorarioParaTrue(2L, 3L);
+		});
+
+		Horario horarioIndisponivel = new Horario();
+		horarioIndisponivel.setId(4L);
+		horarioIndisponivel.setDisponivel(false);
+		horarioIndisponivel.setHora("10:00");
+		prestador.setHorarios(Arrays.asList(horarioIndisponivel));
+
+		serviceScheduleService.alterarDisponibilidadeHorarioParaTrue(2L, 4L);
+
+		assertTrue(horarioIndisponivel.isDisponivel(), "O horário deve estar disponível após a alteração.");
+		verify(serviceScheduleRepository, times(3)).findById(2L); // Chamado três vezes, uma para não encontrado, uma para disponível e uma para sucesso
+		verify(serviceScheduleRepository, times(1)).save(prestador);
+		verify(kafkaProducerService, times(1)).sendMessage("cancelamentos", "Cancelamento registrado: Prestador=Prestador 2, Horário=10:00");
+	}
+
+	@Test
+	void testDeletePrestador() {
+		Long prestadorIdNaoEncontrado = 1L;
+		when(serviceScheduleRepository.existsById(prestadorIdNaoEncontrado)).thenReturn(false);
+
+		assertThrows(PrestadorNaoEncontradoException.class, () -> {
+			serviceScheduleService.deletePrestador(prestadorIdNaoEncontrado);
+		});
+		verify(serviceScheduleRepository, times(1)).existsById(prestadorIdNaoEncontrado);
+		verify(serviceScheduleRepository, times(0)).deleteById(prestadorIdNaoEncontrado);
+
+		Long prestadorIdEncontrado = 2L;
+		when(serviceScheduleRepository.existsById(prestadorIdEncontrado)).thenReturn(true);
+
+		serviceScheduleService.deletePrestador(prestadorIdEncontrado);
+
+		verify(serviceScheduleRepository, times(1)).existsById(prestadorIdEncontrado);
+		verify(serviceScheduleRepository, times(1)).deleteById(prestadorIdEncontrado);
+	}
+
+	@Test
+	void testNomePrestadorJaCadastrado() {
+		String nomePrestador = "Prestador Existente";
+
+		when(serviceScheduleRepository.existsByNome(nomePrestador)).thenReturn(true);
+
+		ServiceScheduleModel novoPrestador = new ServiceScheduleModel();
+		novoPrestador.setNome(nomePrestador);
+
+		assertThrows(PrestadorDuplicadoException.class, () -> {
+			serviceScheduleService.savePrestador(novoPrestador);
+		});
+
+		verify(serviceScheduleRepository, times(1)).existsByNome(nomePrestador);
+	}
+
 }
