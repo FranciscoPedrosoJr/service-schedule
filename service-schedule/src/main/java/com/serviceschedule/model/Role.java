@@ -1,10 +1,17 @@
 package com.serviceschedule.model;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Getter
+@Setter
 @Entity
 public class Role {
     @Id
@@ -20,38 +27,4 @@ public class Role {
 
     @Column(name = "alteradoEm")
     private LocalDateTime alteradoEm;
-
-    // Getters e setters
-
-    public Long getIdRole() {
-        return idRole;
-    }
-
-    public void setIdRole(Long idRole) {
-        this.idRole = idRole;
-    }
-
-    public String getNomeRole() {
-        return nomeRole;
-    }
-
-    public void setNomeRole(String nomeRole) {
-        this.nomeRole = nomeRole;
-    }
-
-    public LocalDateTime getCriadoEm() {
-        return criadoEm;
-    }
-
-    public void setCriadoEm(LocalDateTime criadoEm) {
-        this.criadoEm = criadoEm;
-    }
-
-    public LocalDateTime getAlteradoEm() {
-        return alteradoEm;
-    }
-
-    public void setAlteradoEm(LocalDateTime alteradoEm) {
-        this.alteradoEm = alteradoEm;
-    }
 }

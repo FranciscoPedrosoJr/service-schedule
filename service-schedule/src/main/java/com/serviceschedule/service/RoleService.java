@@ -1,5 +1,6 @@
 package com.serviceschedule.service;
 
+import com.serviceschedule.exception.GlobalExceptionHandler;
 import com.serviceschedule.model.Role;
 import com.serviceschedule.repository.RoleRepository;
 import java.util.List;
@@ -12,7 +13,21 @@ public class RoleService {
     private RoleRepository roleRepository;
 
 
+
+    public boolean nomeRoleJaCadastrado(String nome) {
+        return roleRepository.findBynomeRole(nome).isPresent();
+    }
+
     public Role cadastrarRole(Role role) {
+        final String nomeRole = role.getNomeRole();
+
+        if (nomeRoleJaCadastrado(nomeRole)) {
+            try {
+                throw new GlobalExceptionHandler();
+            } catch (GlobalExceptionHandler e) {
+                throw new RuntimeException(e);
+            }
+        }
         return roleRepository.save(role);
     }
 

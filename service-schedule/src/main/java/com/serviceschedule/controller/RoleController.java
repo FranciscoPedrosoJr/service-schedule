@@ -1,7 +1,6 @@
 package com.serviceschedule.controller;
 
 import com.serviceschedule.model.Role;
-import com.serviceschedule.model.ServiceScheduleModel;
 import com.serviceschedule.service.RoleService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +21,13 @@ public class RoleController {
 
     @PostMapping
     public ResponseEntity<Role> cadastrarRole(@RequestBody Role role) {
-        Role novaRole = roleService.cadastrarRole(role);
+        final Role novaRole = roleService.cadastrarRole(role);
         return new ResponseEntity<>(novaRole, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<Role>> listarTodasRoles() {
-        List<Role> roles = roleService.listarTodasRoles();
+        final List<Role> roles = roleService.listarTodasRoles();
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }
 }
