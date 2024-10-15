@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -25,6 +26,7 @@ public class Role {
     @Column(name = "criadoEm", nullable = false, updatable = false)
     private LocalDateTime criadoEm = LocalDateTime.now();
 
+    @LastModifiedDate
     @Column(name = "alteradoEm")
     private LocalDateTime alteradoEm;
 }
