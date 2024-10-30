@@ -70,6 +70,8 @@ Acesse a aplicação no navegador ou em uma ferramenta de requisições HTTP par
 
 ## Endpoints Disponíveis
 
+**POST /auth/login:** Gera o token que deve ser utilizado nas requisições para que a chamada possa ser executada.
+
 **GET /prestadores:** Retorna a lista de todos os prestadores cadastrados.
 
 **GET /prestadores/{id}:** Retorna os detalhes de um prestador específico.
