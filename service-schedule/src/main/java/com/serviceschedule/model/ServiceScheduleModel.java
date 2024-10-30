@@ -8,9 +8,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.List;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @Entity
+@Getter
+@Setter
 public class ServiceScheduleModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +27,4 @@ public class ServiceScheduleModel {
     @OneToMany(mappedBy = "prestador", cascade = CascadeType.ALL)
     private List<Horario> horarios;
 
-    // Getters e Setters
-    public List<Horario> getHorarios() {
-        return horarios;
-    }
-
-    public void setHorarios(List<Horario> horarios) {
-        this.horarios = horarios;
-    }
 }
